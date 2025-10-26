@@ -1,0 +1,17 @@
+Source: corsair-lncore-dkms
+Section: kernel
+Priority: optional
+Maintainer: Ross Golder <ross@golder.org>
+Build-Depends: debhelper-compat (= 13), dkms
+Standards-Version: 4.7.2
+Rules-Requires-Root: no
+Homepage: https://github.com/rossigee/corsair-lncore-dkms
+Vcs-Browser: https://github.com/rossigee/corsair-lncore-dkms
+Vcs-Git: https://github.com/rossigee/corsair-lncore-dkms
+
+Package: corsair-lncore-dkms
+Architecture: all
+Depends: ${misc:Depends}
+Description: DKMS module for Corsair Lighting Node Core
+ This package provides the kernel module for controlling
+ Corsair Lighting Node Core RGB via a /dev device file.

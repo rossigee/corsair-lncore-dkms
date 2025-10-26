@@ -1,0 +1,3 @@
+src/* usr/src/corsair-lncore-1.0/src
+dkms.conf usr/src/corsair-lncore-1.0/
+99-corsair.rules etc/udev/rules.d/

@@ -1,0 +1,10 @@
+corsair-lncore-dkms for Debian
+-----------------------------
+
+This package provides a DKMS kernel module for controlling Corsair Lighting Node Core devices.
+
+After installation, plug in the device to create /dev/corsair-lncore0. Use the device file to control RGB lighting.
+
+For Secure Boot, sign the module if needed.
+
+ -- Ross G <rossigee@example.com>  Sun, 26 Oct 2025 08:00:48 +0700

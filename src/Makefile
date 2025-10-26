@@ -1,0 +1,1 @@
+obj-m += corsair-lncore.o

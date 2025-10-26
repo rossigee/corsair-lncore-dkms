@@ -1,0 +1,7 @@
+corsair-lncore-dkms (0.1.0-1) unstable; urgency=medium
+
+  * Initial release of Corsair Lighting Node Core DKMS driver
+  * Supports direct LED color control, effects, brightness, firmware query
+  * Includes udev rules for non-root access
+
+ -- Ross G <rossigee@example.com>  Sun, 26 Oct 2025 08:00:48 +0700
