@@ -16,7 +16,7 @@
 
 
 %:
-	dh $@ --with dkms
+	dh $@
 
 # Skip building the kernel module during packaging (let DKMS handle it on install)
 override_dh_auto_build:
