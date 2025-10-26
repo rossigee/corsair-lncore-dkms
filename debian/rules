@@ -16,8 +16,10 @@
 
 
 %:
-	dh $@
+	dh $@ --with dkms
 
+# Skip building the kernel module during packaging (let DKMS handle it on install)
+override_dh_auto_build:
 
 # dh_make generated override targets.
 # This is an example for Cmake (see <https://bugs.debian.org/641051>).
