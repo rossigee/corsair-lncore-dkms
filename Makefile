@@ -8,6 +8,6 @@ clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD)/src clean
 
 tarball: clean
-	tar -czf $(TARBALL) --exclude=.git --exclude=$(TARBALL) .
+	git archive --prefix=corsair-lncore-dkms-$(VERSION)/ --format=tar HEAD | gzip > $(TARBALL)
 
 .PHONY: all clean tarball
