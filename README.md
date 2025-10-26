@@ -4,8 +4,8 @@ This is a DKMS driver for the Corsair Lighting Node Core USB device, allowing co
 
 ## Installation
 
-1. Download the latest `.deb` package from the [GitHub Releases](https://github.com/rossigee/corsair-lncore-dkms/releases) page.
-2. Install the package: `sudo dpkg -i corsair-lncore-dkms_*.deb`
+1. Download the latest source package from the [GitHub Releases](https://github.com/rossigee/corsair-lncore-dkms/releases) page (e.g., `.dsc`, `.orig.tar.gz`, `.debian.tar.xz`).
+2. Build and install: `dpkg-buildpackage -us -uc && sudo dpkg -i ../corsair-lncore-dkms_*.deb`
 3. Plug in the device; it should create `/dev/corsair-lncore0` and load the module automatically.
 
 ### Dependencies

@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y dkms debhelper devscripts build-essential
+
+    - name: Build source package
+      run: dpkg-buildpackage -S
+
+    - name: Move source files
+      run: mv ../corsair-lncore-dkms_* .
+
+    - name: Create GitHub release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        body: |
+          Source package for ${{ github.ref_name }}.
+          Download and build with: dpkg-buildpackage -us -uc
+        draft: false
+        prerelease: false
+
+    - name: Upload release assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./corsair-lncore-dkms_${{ github.ref_name }}.dsc
+        asset_name: corsair-lncore-dkms_${{ github.ref_name }}.dsc
+        asset_content_type: text/plain
+
+    - name: Upload debian tar
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./corsair-lncore-dkms_${{ github.ref_name }}.debian.tar.xz
+        asset_name: corsair-lncore-dkms_${{ github.ref_name }}.debian.tar.xz
+        asset_content_type: application/x-tar
+
+    - name: Upload orig tar
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./corsair-lncore-dkms_${{ github.ref_name }}.orig.tar.gz
+        asset_name: corsair-lncore-dkms_${{ github.ref_name }}.orig.tar.gz
+        asset_content_type: application/gzip
