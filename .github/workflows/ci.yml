@@ -28,13 +28,13 @@ jobs:
       run: dpkg-buildpackage -us -uc
 
     - name: Upload tarball
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tarball
         path: corsair-lncore-dkms_*.orig.tar.gz
 
     - name: Upload deb
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: deb
         path: ../corsair-lncore-dkms_*.deb
