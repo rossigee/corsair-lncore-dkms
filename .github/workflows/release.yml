@@ -12,6 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set version
+      run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
     - name: Install dependencies
       run: |
         sudo apt-get update
@@ -42,8 +45,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./corsair-lncore-dkms_${{ github.ref_name }}.dsc
-        asset_name: corsair-lncore-dkms_${{ github.ref_name }}.dsc
+        asset_path: ./corsair-lncore-dkms_${{ env.VERSION }}.dsc
+        asset_name: corsair-lncore-dkms_${{ env.VERSION }}.dsc
         asset_content_type: text/plain
 
     - name: Upload debian tar
@@ -52,8 +55,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./corsair-lncore-dkms_${{ github.ref_name }}.debian.tar.xz
-        asset_name: corsair-lncore-dkms_${{ github.ref_name }}.debian.tar.xz
+        asset_path: ./corsair-lncore-dkms_${{ env.VERSION }}.debian.tar.xz
+        asset_name: corsair-lncore-dkms_${{ env.VERSION }}.debian.tar.xz
         asset_content_type: application/x-tar
 
     - name: Upload orig tar
@@ -62,6 +65,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./corsair-lncore-dkms_${{ github.ref_name }}.orig.tar.gz
-        asset_name: corsair-lncore-dkms_${{ github.ref_name }}.orig.tar.gz
+        asset_path: ./corsair-lncore-dkms_${{ env.VERSION }}.orig.tar.gz
+        asset_name: corsair-lncore-dkms_${{ env.VERSION }}.orig.tar.gz
         asset_content_type: application/gzip
