@@ -27,44 +27,16 @@ jobs:
       run: mv ../corsair-lncore-dkms_* .
 
     - name: Create GitHub release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
         body: |
           Source package for ${{ github.ref_name }}.
           Download and build with: dpkg-buildpackage -us -uc
         draft: false
         prerelease: false
-
-    - name: Upload release assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./corsair-lncore-dkms_${{ env.VERSION }}.dsc
-        asset_name: corsair-lncore-dkms_${{ env.VERSION }}.dsc
-        asset_content_type: text/plain
-
-    - name: Upload debian tar
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./corsair-lncore-dkms_${{ env.VERSION }}.debian.tar.xz
-        asset_name: corsair-lncore-dkms_${{ env.VERSION }}.debian.tar.xz
-        asset_content_type: application/x-tar
-
-    - name: Upload orig tar
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./corsair-lncore-dkms_${{ env.VERSION }}.orig.tar.gz
-        asset_name: corsair-lncore-dkms_${{ env.VERSION }}.orig.tar.gz
-        asset_content_type: application/gzip
+        files: |
+          ./corsair-lncore-dkms_${{ env.VERSION }}.dsc
+          ./corsair-lncore-dkms_${{ env.VERSION }}.debian.tar.xz
+          ./corsair-lncore-dkms_${{ env.VERSION }}.orig.tar.gz
