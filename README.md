@@ -1,5 +1,9 @@
 # Corsair Lighting Node Core DKMS Driver
 
+[![CI](https://github.com/rossigee/corsair-lncore-dkms/actions/workflows/ci.yml/badge.svg)](https://github.com/rossigee/corsair-lncore-dkms/actions/workflows/ci.yml)
+[![Release](https://github.com/rossigee/corsair-lncore-dkms/actions/workflows/release.yml/badge.svg)](https://github.com/rossigee/corsair-lncore-dkms/actions/workflows/release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/rossigee/corsair-lncore-dkms)](https://github.com/rossigee/corsair-lncore-dkms/releases)
+
 This is a DKMS driver for the Corsair Lighting Node Core USB device, allowing control of RGB lighting.
 
 ## Installation
