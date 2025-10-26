@@ -27,11 +27,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y dkms debhelper devscripts build-essential
 
-    - name: Build source package
-      run: dpkg-buildpackage -S
+    - name: Build binary package
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y dkms
+        dpkg-buildpackage -us -uc
 
-    - name: Move source files
-      run: mv ../corsair-lncore-dkms_* .
+    - name: Move package files
+      run: mv ../corsair-lncore-dkms_*.deb .
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
@@ -39,10 +42,9 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: Release ${{ github.ref_name }}
         body: |
-          Source package for v${{ env.VERSION_TAG }}.
-          Download and build with: dpkg-buildpackage -us -uc
+          Debian package for v${{ env.VERSION_TAG }}.
+          Download and install with: sudo dpkg -i corsair-lncore-dkms_*.deb
         draft: false
         prerelease: false
         files: |
-          ./corsair-lncore-dkms_${{ env.FULL_VERSION }}.dsc
-          ./corsair-lncore-dkms_${{ env.FULL_VERSION }}.debian.tar.xz
+          ./corsair-lncore-dkms_${{ env.FULL_VERSION }}_all.deb
