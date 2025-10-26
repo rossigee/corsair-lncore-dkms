@@ -24,6 +24,9 @@ jobs:
     - name: Create tarball
       run: make tarball
 
+    - name: Move tarball for Debian build
+      run: mv corsair-lncore-dkms_*.orig.tar.gz ../
+
     - name: Build Debian package
       run: dpkg-buildpackage -us -uc
 
