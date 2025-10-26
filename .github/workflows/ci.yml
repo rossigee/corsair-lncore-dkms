@@ -21,20 +21,8 @@ jobs:
     - name: Build kernel module
       run: make
 
-    - name: Create tarball
-      run: make tarball
-
-    - name: Move tarball for Debian build
-      run: mv corsair-lncore-dkms_*.orig.tar.gz ../
-
     - name: Build Debian package
       run: dpkg-buildpackage -us -uc
-
-    - name: Upload tarball
-      uses: actions/upload-artifact@v4
-      with:
-        name: tarball
-        path: corsair-lncore-dkms_*.orig.tar.gz
 
     - name: Upload deb
       uses: actions/upload-artifact@v4
