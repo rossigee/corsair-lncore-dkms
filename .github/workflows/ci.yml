@@ -21,11 +21,14 @@ jobs:
     - name: Build source package
       run: dpkg-buildpackage -S
 
+    - name: Move source files for upload
+      run: mv ../corsair-lncore-dkms_* .
+
     - name: Upload source artifacts
       uses: actions/upload-artifact@v4
       with:
         name: source
         path: |
-          ../corsair-lncore-dkms_*.dsc
-          ../corsair-lncore-dkms_*.debian.tar.xz
-          ../corsair-lncore-dkms_*.orig.tar.gz
+          corsair-lncore-dkms_*.dsc
+          corsair-lncore-dkms_*.debian.tar.xz
+          corsair-lncore-dkms_*.orig.tar.gz
