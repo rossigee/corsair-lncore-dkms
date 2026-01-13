@@ -42,7 +42,6 @@ jobs:
     - name: Move package files for upload
       run: |
         mv ../corsair-lncore-dkms_*.dsc .
-        mv ../corsair-lncore-dkms_*.debian.tar.xz .
         mv ../corsair-lncore-dkms_*.orig.tar.gz .
         mv ../corsair-lncore-dkms_*.deb .
         mv ../corsair-lncore-cli_*.deb .
@@ -53,7 +52,6 @@ jobs:
         name: packages
         path: |
           corsair-lncore-dkms_*.dsc
-          corsair-lncore-dkms_*.debian.tar.xz
           corsair-lncore-dkms_*.orig.tar.gz
           corsair-lncore-dkms_*.deb
           corsair-lncore-cli_*.deb
