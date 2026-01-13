@@ -12,6 +12,19 @@ This is a DKMS driver for the Corsair Lighting Node Core USB device, allowing co
 2. Build and install: `dpkg-buildpackage -us -uc && sudo dpkg -i ../corsair-lncore-dkms_*.deb`
 3. Plug in the device; it should create `/dev/corsair-lncore0` and load the module automatically.
 
+### CLI Tool (Optional)
+
+For easy control without writing code, build and install the included CLI tool:
+
+```bash
+cd cln-cli
+make
+sudo make install
+cln-cli set-color 0 255 0 0  # Set channel 0 to red
+```
+
+See `cln-cli/README.md` for detailed usage.
+
 ### Dependencies
 
 The package depends on DKMS, which will be installed automatically. For Secure Boot, you may need to sign the kernel module.
