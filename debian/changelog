@@ -4,6 +4,7 @@ corsair-lncore-dkms (0.1.1-1) unstable; urgency=medium
   * Enhanced documentation with API details, Secure Boot guide, troubleshooting
   * CI/CD updates: modern GitHub Actions, CodeQL security scanning
   * Improved udev rules with proper group permissions
+  * Added cln-cli command-line tool for easy LED control
   * Code hardening and maintainer updates
 
   -- Ross Golder <ross@golder.org>  Wed, 15 Jan 2025 11:00:00 +0000

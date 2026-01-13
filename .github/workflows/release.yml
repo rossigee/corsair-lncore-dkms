@@ -34,7 +34,7 @@ jobs:
         dpkg-buildpackage -us -uc
 
     - name: Move package files
-      run: mv ../corsair-lncore-dkms_*.deb .
+      run: mv ../corsair-lncore-*.deb .
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
@@ -42,9 +42,24 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: Release ${{ github.ref_name }}
         body: |
-          Debian package for v${{ env.VERSION_TAG }}.
-          Download and install with: sudo dpkg -i corsair-lncore-dkms_*.deb
+          Debian packages for v${{ env.VERSION_TAG }}.
+
+          **Packages:**
+          - `corsair-lncore-dkms_${{ env.FULL_VERSION }}_all.deb` - DKMS kernel module
+          - `corsair-lncore-cli_${{ env.FULL_VERSION }}_amd64.deb` - Command-line tool
+
+          **Installation:**
+          ```bash
+          # Install both packages
+          sudo dpkg -i corsair-lncore-dkms_${{ env.FULL_VERSION }}_all.deb
+          sudo dpkg -i corsair-lncore-cli_${{ env.FULL_VERSION }}_amd64.deb
+
+          # Or install just the DKMS module and build CLI from source
+          sudo dpkg -i corsair-lncore-dkms_${{ env.FULL_VERSION }}_all.deb
+          cd cln-cli && make && sudo make install
+          ```
         draft: false
         prerelease: false
         files: |
           ./corsair-lncore-dkms_${{ env.FULL_VERSION }}_all.deb
+          ./corsair-lncore-cli_${{ env.FULL_VERSION }}_amd64.deb

@@ -33,14 +33,22 @@ jobs:
     - name: Build source package
       run: dpkg-buildpackage -S
 
-    - name: Move source files for upload
-      run: mv ../corsair-lncore-dkms_* .
+    - name: Build binary packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y dkms
+        dpkg-buildpackage -us -uc
 
-    - name: Upload source artifacts
+    - name: Move package files for upload
+      run: mv ../corsair-lncore-* .
+
+    - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: source
+        name: packages
         path: |
           corsair-lncore-dkms_*.dsc
           corsair-lncore-dkms_*.debian.tar.xz
           corsair-lncore-dkms_*.orig.tar.gz
+          corsair-lncore-dkms_*.deb
+          corsair-lncore-cli_*.deb

@@ -20,6 +20,14 @@
 
 # Skip building the kernel module during packaging (let DKMS handle it on install)
 override_dh_auto_build:
+	# Build the CLI tool
+	$(MAKE) -C cln-cli
+
+# Install the CLI tool into the cli package
+override_dh_auto_install:
+	dh_auto_install
+	install -d debian/corsair-lncore-cli/usr/bin
+	install -m 755 cln-cli/cln-cli debian/corsair-lncore-cli/usr/bin/
 
 # dh_make generated override targets.
 # This is an example for Cmake (see <https://bugs.debian.org/641051>).
