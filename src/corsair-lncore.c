@@ -380,4 +380,4 @@ module_usb_driver(lncore_driver);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ross Golder");
 MODULE_DESCRIPTION("Corsair Lighting Node Core USB driver");
-MODULE_VERSION("0.1.0");
+MODULE_VERSION("0.2.0");
