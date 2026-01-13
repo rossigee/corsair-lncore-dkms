@@ -20,11 +20,6 @@ src/Module.symvers
 *.buildinfo
 *.tar.gz
 *.tar.xz
-debian/corsair-lncore-dkms/
-debian/files
-debian/*.debhelper
-debian/*.debhelper.log
-debian/*.substvars
 
 # General
 *.swp
