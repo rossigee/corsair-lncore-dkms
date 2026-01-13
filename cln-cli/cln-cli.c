@@ -188,6 +188,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    // Handle help commands without requiring device
+    if (strcmp(argv[1], "help") == 0 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+        usage(argv[0]);
+        return 0;
+    }
+
     int fd = open_device();
     if (fd < 0) {
         return 1;
@@ -220,8 +226,6 @@ int main(int argc, char *argv[]) {
         result = set_effect(fd, argc, argv);
     } else if (strcmp(argv[1], "get-firmware") == 0) {
         result = get_firmware(fd);
-    } else if (strcmp(argv[1], "help") == 0 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
-        usage(argv[0]);
     } else {
         fprintf(stderr, "Error: Unknown command '%s'\n", argv[1]);
         usage(argv[0]);
