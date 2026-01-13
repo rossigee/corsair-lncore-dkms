@@ -1,3 +1,13 @@
+corsair-lncore-dkms (0.1.2-1) unstable; urgency=medium
+
+  * Multi-package Debian structure: separate DKMS and CLI packages
+  * DKMS package (all): kernel module source, udev rules
+  * CLI package (any): command-line tool binary
+  * Updated CI/CD to build and distribute both packages
+  * Improved packaging structure for better Debian compliance
+
+  -- Ross Golder <ross@golder.org>  Wed, 15 Jan 2025 12:00:00 +0000
+
 corsair-lncore-dkms (0.1.1-1) unstable; urgency=medium
 
   * Security improvements: input validation, bounds checking, mutex protection
