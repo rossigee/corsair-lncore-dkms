@@ -4,4 +4,4 @@ corsair-lncore-dkms (0.1.0-1) unstable; urgency=medium
   * Supports direct LED color control, effects, brightness, firmware query
   * Includes udev rules for non-root access
 
- -- Ross G <rossigee@example.com>  Sun, 26 Oct 2025 08:00:48 +0700
+  -- Ross Golder <ross@golder.org>  Wed, 15 Jan 2025 10:00:00 +0000

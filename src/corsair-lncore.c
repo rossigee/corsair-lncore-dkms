@@ -4,6 +4,7 @@
 #include <linux/cdev.h>
 #include <linux/uaccess.h>  // For copy_to/from_user if needed
 #include <linux/ioctl.h>
+#include <linux/mutex.h>
 
 #define VENDOR_ID 0x1b1c
 #define PRODUCT_ID 0x0c1a
@@ -72,6 +73,7 @@ static struct cdev cdev;
 static struct class *cl;  // For /dev node
 static struct usb_interface *interface;
 static char firmware_version[16] = {0};
+static DEFINE_MUTEX(lncore_mutex);  // For thread-safe access
 
 // Helper function to send packet
 static int send_packet(struct usb_device *dev, unsigned char *buf, size_t len) {
@@ -198,6 +200,23 @@ static ssize_t lncore_write(struct file *file, const char __user *buf, size_t co
 
     unsigned char channel = kbuf[0];
     unsigned char num_leds = kbuf[1];
+
+    // Validate channel and LED count
+    if (channel >= CORSAIR_LIGHTING_NODE_NUM_CHANNELS) {
+        ret = -EINVAL;
+        goto out;
+    }
+    if (num_leds == 0 || num_leds > 204) {  // Reasonable limit for LED count
+        ret = -EINVAL;
+        goto out;
+    }
+
+    // Check for integer overflow in size calculation
+    if (num_leds > (SIZE_MAX - 2) / 3) {
+        ret = -EINVAL;
+        goto out;
+    }
+
     if (count != 2 + 3 * num_leds) {
         ret = -EINVAL;
         goto out;
@@ -250,11 +269,25 @@ out:
 // Add read/ioctl as needed for queries/commit
 
 static long lncore_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
-    struct usb_device *dev = interface_to_usbdev(interface);
+    struct usb_device *dev;
+    long ret = 0;
+
+    if (mutex_lock_interruptible(&lncore_mutex))
+        return -ERESTARTSYS;
+
+    dev = interface_to_usbdev(interface);
     switch (cmd) {
     case CORSAIR_IOC_SET_BRIGHTNESS: {
         unsigned char brightness;
-        if (copy_from_user(&brightness, (void __user *)arg, sizeof(brightness))) return -EFAULT;
+        if (copy_from_user(&brightness, (void __user *)arg, sizeof(brightness))) {
+            ret = -EFAULT;
+            goto out;
+        }
+        // Validate brightness range (0-100)
+        if (brightness > 100) {
+            ret = -EINVAL;
+            goto out;
+        }
         // Assume channel 0 for now, or add channel to ioctl
         send_brightness(dev, 0, brightness);
         send_commit(dev);
@@ -262,7 +295,23 @@ static long lncore_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     }
     case CORSAIR_IOC_SET_EFFECT: {
         struct effect_config cfg;
-        if (copy_from_user(&cfg, (void __user *)arg, sizeof(cfg))) return -EFAULT;
+        if (copy_from_user(&cfg, (void __user *)arg, sizeof(cfg))) {
+            ret = -EFAULT;
+            goto out;
+        }
+        // Validate effect config parameters
+        if (cfg.channel >= CORSAIR_LIGHTING_NODE_NUM_CHANNELS) {
+            ret = -EINVAL;
+            goto out;
+        }
+        if (cfg.num_leds == 0 || cfg.num_leds > 204) {
+            ret = -EINVAL;
+            goto out;
+        }
+        if (cfg.speed > 4 || cfg.direction > 1 || cfg.random > 1) {
+            ret = -EINVAL;
+            goto out;
+        }
         send_reset(dev, cfg.channel);
         send_begin(dev, cfg.channel);
         send_port_state(dev, cfg.channel, CORSAIR_LIGHTING_NODE_PORT_STATE_HARDWARE);
@@ -271,13 +320,20 @@ static long lncore_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
         break;
     }
     case CORSAIR_IOC_GET_FIRMWARE: {
-        if (copy_to_user((void __user *)arg, firmware_version, sizeof(firmware_version))) return -EFAULT;
+        if (copy_to_user((void __user *)arg, firmware_version, sizeof(firmware_version))) {
+            ret = -EFAULT;
+            goto out;
+        }
         break;
     }
     default:
-        return -ENOTTY;
+        ret = -ENOTTY;
+        goto out;
     }
-    return 0;
+
+out:
+    mutex_unlock(&lncore_mutex);
+    return ret;
 }
 
 static struct file_operations fops = {
@@ -322,5 +378,6 @@ static struct usb_driver lncore_driver = {
 
 module_usb_driver(lncore_driver);
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Your Name");
+MODULE_AUTHOR("Ross Golder");
 MODULE_DESCRIPTION("Corsair Lighting Node Core USB driver");
+MODULE_VERSION("0.1.0");
