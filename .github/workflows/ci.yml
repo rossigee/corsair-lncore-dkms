@@ -40,7 +40,12 @@ jobs:
         dpkg-buildpackage -us -uc
 
     - name: Move package files for upload
-      run: mv ../corsair-lncore-* .
+      run: |
+        mv ../corsair-lncore-dkms_*.dsc .
+        mv ../corsair-lncore-dkms_*.debian.tar.xz .
+        mv ../corsair-lncore-dkms_*.orig.tar.gz .
+        mv ../corsair-lncore-dkms_*.deb .
+        mv ../corsair-lncore-cli_*.deb .
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
