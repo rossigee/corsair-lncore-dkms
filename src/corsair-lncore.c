@@ -174,9 +174,16 @@ static void send_firmware_request(struct usb_device *dev) {
     send_packet(dev, buf, sizeof(buf));
     // Read response
     unsigned char read_buf[CORSAIR_LIGHTING_NODE_READ_PACKET_SIZE];
-    usb_control_msg(dev, usb_rcvctrlpipe(dev, 0), 0x01, 0xA1, 0x0100, 0, read_buf, sizeof(read_buf), 5000);
+    int ret = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0), 0x01, 0xA1, 0x0100, 0, read_buf, sizeof(read_buf), 5000);
+    pr_info("LNCORE: Firmware request ret: %d", ret);
+    if (ret > 0) {
+        pr_info("LNCORE: Read buf: %02x %02x %02x %02x %02x", read_buf[0], read_buf[1], read_buf[2], read_buf[3], read_buf[4]);
+    }
     if (read_buf[0] == 0x00 && read_buf[1] == CORSAIR_LIGHTING_NODE_PACKET_ID_FIRMWARE) {
         sprintf(firmware_version, "%d.%d.%d", read_buf[2], read_buf[3], read_buf[4]);
+        pr_info("LNCORE: Firmware set to %s", firmware_version);
+    } else {
+        pr_info("LNCORE: Firmware response not matched");
     }
 }
 
@@ -320,6 +327,7 @@ static long lncore_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
         break;
     }
     case CORSAIR_IOC_GET_FIRMWARE: {
+        send_firmware_request(dev);
         if (copy_to_user((void __user *)arg, firmware_version, sizeof(firmware_version))) {
             ret = -EFAULT;
             goto out;
