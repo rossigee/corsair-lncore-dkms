@@ -1,5 +1,5 @@
 #include <linux/module.h>
-#include <linux/usb.h>
+#include <linux/hid.h>
 #include <linux/fs.h>
 #include <linux/cdev.h>
 #include <linux/uaccess.h>  // For copy_to/from_user if needed
@@ -62,11 +62,12 @@ struct effect_config {
     unsigned char red3, grn3, blu3;
 };
 
-static struct usb_device_id id_table[] = {
-    { USB_DEVICE(VENDOR_ID, PRODUCT_ID) },
+static struct hid_device_id id_table[] = {
+    { HID_USB_DEVICE(VENDOR_ID, PRODUCT_ID) },
     { }
 };
-MODULE_DEVICE_TABLE(usb, id_table);
+
+MODULE_DEVICE_TABLE(hid, id_table);
 
 static dev_t dev_num;
 static struct cdev cdev;
@@ -174,7 +175,7 @@ static void send_firmware_request(struct usb_device *dev) {
     send_packet(dev, buf, sizeof(buf));
     // Read response
     unsigned char read_buf[CORSAIR_LIGHTING_NODE_READ_PACKET_SIZE];
-    int ret = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0), 0x01, 0xA1, 0x0100, 0, read_buf, sizeof(read_buf), 5000);
+    int ret = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0), 0x01, 0xA1, 0x0000, 0, read_buf, sizeof(read_buf), 10000);
     pr_info("LNCORE: Firmware request ret: %d", ret);
     if (ret > 0) {
         pr_info("LNCORE: Read buf: %02x %02x %02x %02x %02x", read_buf[0], read_buf[1], read_buf[2], read_buf[3], read_buf[4]);
@@ -352,16 +353,16 @@ static struct file_operations fops = {
     .unlocked_ioctl = lncore_ioctl,
 };
 
-static int lncore_probe(struct usb_interface *intf, const struct usb_device_id *id) {
-    interface = intf;
+static int lncore_probe(struct hid_device *hdev, const struct hid_device_id *id) {
+    interface = to_usb_interface(hdev->dev.parent);
     if (alloc_chrdev_region(&dev_num, 0, 1, MODULE_NAME) < 0) return -1;
     cdev_init(&cdev, &fops);
     if (cdev_add(&cdev, dev_num, 1) < 0) goto err_chrdev;
     cl = class_create(MODULE_NAME);
     device_create(cl, NULL, dev_num, NULL, MODULE_NAME "0");  // Creates /dev/corsair-lncore0
-    struct usb_device *dev = interface_to_usbdev(interface);
+    struct usb_device *dev = hid_to_usb_dev(hdev);
     send_firmware_request(dev);
-    printk(KERN_INFO "%s: Probed, firmware %s\n", MODULE_NAME, firmware_version);
+    pr_info("%s: Probed, firmware %s\n", MODULE_NAME, firmware_version);
     return 0;
 
 err_chrdev:
@@ -369,22 +370,22 @@ err_chrdev:
     return -1;
 }
 
-static void lncore_disconnect(struct usb_interface *intf) {
+static void lncore_remove(struct hid_device *hdev) {
     device_destroy(cl, dev_num);
     class_destroy(cl);
     cdev_del(&cdev);
     unregister_chrdev_region(dev_num, 1);
-    printk(KERN_INFO "%s: Disconnected\n", MODULE_NAME);
+    pr_info("%s: Removed\n", MODULE_NAME);
 }
 
-static struct usb_driver lncore_driver = {
+static struct hid_driver lncore_driver = {
     .name = MODULE_NAME,
     .id_table = id_table,
     .probe = lncore_probe,
-    .disconnect = lncore_disconnect,
+    .remove = lncore_remove,
 };
 
-module_usb_driver(lncore_driver);
+module_hid_driver(lncore_driver);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ross Golder");
 MODULE_DESCRIPTION("Corsair Lighting Node Core USB driver");
